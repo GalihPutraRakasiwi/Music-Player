@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wavvy — Local Music Player</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+
+    <!-- Drop overlay -->
+    <div id="drop-overlay">
+        <div class="drop-inner">
+            <div class="drop-icon">♫</div>
+            <p>Lepaskan file musik di sini</p>
+        </div>
+    </div>
+
+    <!-- App shell -->
+    <div class="app">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">Wavvy</div>
+
+            <nav class="nav">
+                <button class="nav-btn active" data-view="library" onclick="switchView('library')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 7h18M3 12h18M3 17h18" /></svg>
+                    Library
+                </button>
+                <button class="nav-btn" data-view="queue" onclick="switchView('queue')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                    </svg>
+                    Queue
+                </button>
+                <button class="nav-btn" data-view="favorites" onclick="switchView('favorites')">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    Favorites
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <label class="upload-btn" title="Tambah musik">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" /></svg>
+                    Tambah Musik
+                    <input type="file" id="file-input" accept="audio/*" multiple hidden />
+                </label>
+                <label class="upload-btn upload-folder" title="Tambah folder">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+                    Tambah Folder
+                    <input type="file" id="folder-input" accept="audio/*" multiple webkitdirectory hidden />
+                </label>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main">
+
+            <!-- Library view -->
+            <section id="view-library" class="view active">
+                <div class="view-header">
+                    <h1 id="view-title">Library</h1>
+                    <div class="header-actions">
+                        <input type="text" id="search-input" placeholder="Cari lagu..." oninput="filterSongs()" />
+                        <select id="sort-select" onchange="sortSongs()">
+                            <option value="default">Urutan default</option>
+                            <option value="title">Judul A–Z</option>
+                            <option value="artist">Artis A–Z</option>
+                            <option value="duration">Durasi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="empty-state" class="empty-state">
+                    <div class="empty-icon">🎵</div>
+                    <h2>Belum ada musik</h2>
+                    <p>Klik "Tambah Musik" atau drag & drop file audio ke sini</p>
+                    <label class="btn-primary">
+                        Pilih File Musik
+                        <input type="file" accept="audio/*" multiple hidden onchange="handleFiles(this.files)" />
+                    </label>
+                </div>
+
+                <div id="song-list" class="song-list hidden">
+                    <div class="list-header">
+                        <span class="col-num">#</span>
+                        <span class="col-title">Judul</span>
+                        <span class="col-artist">Artis</span>
+                        <span class="col-duration">⏱</span>
+                        <span class="col-actions"></span>
+                    </div>
+                    <div id="song-rows"></div>
+                </div>
+            </section>
+
+            <!-- Queue view -->
+            <section id="view-queue" class="view">
+                <div class="view-header">
+                    <h1>Queue</h1>
+                    <button class="btn-ghost" onclick="clearQueue()">Kosongkan</button>
+                </div>
+                <div id="queue-list" class="song-list">
+                    <div id="queue-rows"></div>
+                </div>
+                <div id="queue-empty" class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h2>Queue kosong</h2>
+                    <p>Tambahkan lagu ke queue dari library</p>
+                </div>
+            </section>
+
+            <!-- Favorites view -->
+            <section id="view-favorites" class="view">
+                <div class="view-header">
+                    <h1>Favorites</h1>
+                </div>
+                <div id="fav-list" class="song-list">
+                    <div class="list-header">
+                        <span class="col-num">#</span>
+                        <span class="col-title">Judul</span>
+                        <span class="col-artist">Artis</span>
+                        <span class="col-duration">⏱</span>
+                        <span class="col-actions"></span>
+                    </div>
+                    <div id="fav-rows"></div>
+                </div>
+                <div id="fav-empty" class="empty-state">
+                    <div class="empty-icon">❤️</div>
+                    <h2>Belum ada favorit</h2>
+                    <p>Klik ikon hati pada lagu untuk menambahkannya</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Now playing sidebar -->
+        <aside class="now-playing" id="now-playing">
+            <div class="np-art" id="np-art">
+                <div class="art-placeholder" id="art-placeholder">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                    </svg>
+                </div>
+                <img id="art-img" src="" alt="" hidden />
+                <div class="vinyl-ring"></div>
+            </div>
+
+            <div class="np-info">
+                <div class="np-title" id="np-title">Tidak ada lagu</div>
+                <div class="np-artist" id="np-artist">—</div>
+            </div>
+
+            <button class="fav-btn" id="fav-btn" onclick="toggleFavoriteCurrent()" title="Favorite">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+            </button>
+
+            <div class="np-waveform" id="waveform">
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+                <div class="wf-bar"></div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Player bar -->
+    <footer class="player-bar" id="player-bar">
+        <div class="player-left">
+            <div class="mini-art" id="mini-art">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                </svg>
+            </div>
+            <div class="mini-info">
+                <span class="mini-title" id="mini-title">—</span>
+                <span class="mini-artist" id="mini-artist">—</span>
+            </div>
+        </div>
+
+        <div class="player-center">
+            <div class="controls">
+                <button class="ctrl-btn" id="shuffle-btn" onclick="toggleShuffle()" title="Shuffle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16 3h5v5M4 20l16-16M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg>
+                </button>
+                <button class="ctrl-btn" onclick="prevSong()" title="Sebelumnya">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 20 9 12l10-8v16zM5 4v16" /></svg>
+                </button>
+                <button class="ctrl-btn play-btn" id="play-btn" onclick="togglePlay()" title="Play/Pause">
+                    <svg id="icon-play" viewBox="0 0 24 24">
+                        <path d="M5 3l14 9-14 9V3z" /></svg>
+                    <svg id="icon-pause" viewBox="0 0 24 24" hidden>
+                        <path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                </button>
+                <button class="ctrl-btn" onclick="nextSong()" title="Selanjutnya">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 4l10 8-10 8V4zM19 4v16" /></svg>
+                </button>
+                <button class="ctrl-btn" id="repeat-btn" onclick="cycleRepeat()" title="Repeat">
+                    <svg id="icon-repeat" viewBox="0 0 24 24">
+                        <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" /></svg>
+                    <span id="repeat-one" class="repeat-one hidden">1</span>
+                </button>
+            </div>
+
+            <div class="progress-area">
+                <span id="time-current">0:00</span>
+                <div class="progress-bar" id="progress-bar" onclick="seekTo(event)">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <div class="progress-thumb" id="progress-thumb"></div>
+                </div>
+                <span id="time-total">0:00</span>
+            </div>
+        </div>
+
+        <div class="player-right">
+            <button class="ctrl-btn" onclick="toggleMute()" title="Mute" id="mute-btn">
+                <svg id="icon-vol" viewBox="0 0 24 24">
+                    <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
+                <svg id="icon-mute" viewBox="0 0 24 24" hidden>
+                    <path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" /></svg>
+            </button>
+            <div class="volume-bar" id="volume-bar" onclick="setVolume(event)">
+                <div class="volume-fill" id="volume-fill" style="width:80%"></div>
+                <div class="volume-thumb"></div>
+            </div>
+            <button class="ctrl-btn" onclick="toggleQueue()" title="Queue" id="queue-toggle-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Hidden audio element -->
+    <audio id="audio"></audio>
+
+    <script src="./app.js"></script>
+    <script src="./pwa.js"></script>
+    <script src="./sw.js"></script>
+</body>
+
+</html>

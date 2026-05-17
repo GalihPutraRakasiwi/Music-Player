@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Generate Wavvy Icons</title>
+</head>
+
+<body
+    style="background:#111;display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px;font-family:sans-serif;color:#fff">
+    <h2>Klik tombol untuk download icon Wavvy</h2>
+
+    <canvas id="c192" width="192" height="192" style="border-radius:24px"></canvas>
+    <canvas id="c512" width="512" height="512" style="border-radius:64px"></canvas>
+
+    <button onclick="download(192)"
+        style="padding:12px 24px;background:#c8f560;color:#000;border:none;border-radius:8px;font-size:16px;cursor:pointer">Download
+        icon-192.png</button>
+    <button onclick="download(512)"
+        style="padding:12px 24px;background:#c8f560;color:#000;border:none;border-radius:8px;font-size:16px;cursor:pointer">Download
+        icon-512.png</button>
+
+    <p style="color:#888;font-size:13px">Setelah download, taruh kedua file .png di folder yang sama dengan index.html
+    </p>
+
+    <script>
+        function drawIcon(size) {
+            const c = document.getElementById('c' + size);
+            const ctx = c.getContext('2d');
+            const r = size * 0.12;
+
+            // Background
+            ctx.fillStyle = '#0a0a0f';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, r);
+            ctx.fill();
+
+            // Accent circle
+            ctx.fillStyle = '#c8f560';
+            ctx.beginPath();
+            ctx.arc(size * 0.5, size * 0.45, size * 0.28, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Music note
+            ctx.fillStyle = '#0a0a0f';
+            const s = size * 0.22;
+            const cx = size * 0.5;
+            const cy = size * 0.45;
+            ctx.font = `bold ${s}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('♫', cx, cy);
+
+            // App name
+            ctx.fillStyle = '#c8f560';
+            ctx.font = `bold ${size * 0.1}px sans-serif`;
+            ctx.fillText('Wavvy', size * 0.5, size * 0.82);
+        }
+
+        function download(size) {
+            const c = document.getElementById('c' + size);
+            const a = document.createElement('a');
+            a.download = `icon-${size}.png`;
+            a.href = c.toDataURL('image/png');
+            a.click();
+        }
+
+        drawIcon(192);
+        drawIcon(512);
+    </script>
+</body>
+
+</html>

@@ -222,10 +222,8 @@
                             <path d="M19 20 9 12l10-8v16zM5 4v16" /></svg>
                     </button>
                     <button class="ctrl-btn play-btn" id="play-btn" onclick="togglePlay()" title="Play/Pause">
-                        <svg id="icon-play" viewBox="0 0 24 24">
+                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor;stroke:none">
                             <path d="M5 3l14 9-14 9V3z" /></svg>
-                        <svg id="icon-pause" viewBox="0 0 24 24" hidden>
-                            <path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
                     </button>
                     <button class="ctrl-btn" onclick="nextSong()" title="Selanjutnya">
                         <svg viewBox="0 0 24 24">
@@ -242,11 +240,10 @@
 
             <div class="player-right">
                 <button class="ctrl-btn" onclick="toggleMute()" title="Mute" id="mute-btn">
-                    <svg id="icon-vol" viewBox="0 0 24 24">
+                    <svg viewBox="0 0 24 24"
+                        style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">
                         <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
                     </svg>
-                    <svg id="icon-mute" viewBox="0 0 24 24" hidden>
-                        <path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" /></svg>
                 </button>
                 <div class="volume-bar" id="volume-bar" onclick="setVolume(event)">
                     <div class="volume-fill" id="volume-fill" style="width:80%"></div>

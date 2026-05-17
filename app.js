@@ -299,8 +299,12 @@ function togglePlay() {
 }
 
 function updatePlayBtn() {
-  document.getElementById("icon-play").hidden = state.playing;
-  document.getElementById("icon-pause").hidden = !state.playing;
+  const btn = document.getElementById("play-btn");
+  if (state.playing) {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor;stroke:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>`;
+  } else {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor;stroke:none"><path d="M5 3l14 9-14 9V3z"/></svg>`;
+  }
 }
 
 function updateArtSpinner() {
@@ -446,19 +450,27 @@ function setVolume(e) {
   updateVolumeUI();
 }
 
+function updateMuteBtn() {
+  const btn = document.getElementById("mute-btn");
+  if (!btn) return;
+  if (state.muted || state.volume === 0) {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>`;
+  } else {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+  }
+}
+
 function toggleMute() {
   state.muted = !state.muted;
   audio.volume = state.muted ? 0 : state.volume;
-  document.getElementById("icon-vol").hidden = state.muted;
-  document.getElementById("icon-mute").hidden = !state.muted;
+  updateMuteBtn();
 }
 
 function updateVolumeUI() {
   document.getElementById("volume-fill").style.width = state.volume * 100 + "%";
   const thumb = document.querySelector(".volume-thumb");
   if (thumb) thumb.style.left = state.volume * 100 + "%";
-  document.getElementById("icon-vol").hidden = false;
-  document.getElementById("icon-mute").hidden = true;
+  updateMuteBtn();
 }
 
 audio.volume = state.volume;
@@ -597,3 +609,4 @@ document.addEventListener("keydown", (e) => {
 
 // ── Init ───────────────────────────────────────────────────────────────────
 renderAll();
+updateMuteBtn();

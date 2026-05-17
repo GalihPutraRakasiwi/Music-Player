@@ -36,7 +36,7 @@ body {
 .app {
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr var(--np-w);
-  height: calc(100vh - var(--player-h));
+  height: calc(100dvh - var(--player-h));
   overflow: hidden;
 }
 
@@ -980,7 +980,8 @@ body {
 
 @media (max-width: 640px) {
   :root {
-    --player-h: 120px;
+    --player-h: 100px;
+    --mobile-nav-h: 56px;
     --sidebar-w: 0px;
   }
 
@@ -990,7 +991,7 @@ body {
 
   .app {
     grid-template-columns: 1fr;
-    height: calc(100vh - var(--player-h) - 52px); /* space for mobile nav */
+    height: calc(100dvh - var(--player-h) - var(--mobile-nav-h));
   }
 
   .view {
@@ -1019,10 +1020,9 @@ body {
   }
 
   #sort-select {
-    display: none; /* hide sort on mobile for space */
+    display: none;
   }
 
-  /* Song list — compact mobile layout */
   .list-header {
     grid-template-columns: 28px 1fr 52px 40px;
     padding: 6px 8px;
@@ -1038,89 +1038,115 @@ body {
   .sr-title {
     font-size: 13px;
   }
-
   .sr-dur {
     font-size: 12px;
   }
 
-  /* Always show actions on mobile (no hover on touch) */
   .sr-actions {
     opacity: 1;
   }
-
-  /* Only show fav button on mobile, hide queue+delete to save space */
   .sr-actions button:not(:first-child) {
     display: none;
   }
 
-  /* Player bar mobile */
+  /* Player bar: fixed, sits directly above mobile nav */
+  .player-bar {
+    position: fixed;
+    bottom: var(--mobile-nav-h);
+    left: 0;
+    right: 0;
+    height: var(--player-h);
+    z-index: 90;
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+  }
+
   .player-progress-row {
-    padding: 8px 12px 2px;
+    padding: 10px 14px 2px;
+    flex-shrink: 0;
+  }
+
+  .player-progress-row span {
+    font-size: 10px;
+    min-width: 28px;
   }
 
   .player-main-row {
+    flex: 1;
     padding: 2px 12px 8px;
-    gap: 4px;
+    gap: 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
   }
 
   .player-left {
     gap: 8px;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .mini-art {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
   }
 
   .mini-title {
     font-size: 12px;
   }
 
-  /* Hide shuffle & repeat on mobile player to save space */
   #shuffle-btn,
   #repeat-btn {
     display: none;
   }
 
   .controls {
-    gap: 2px;
+    gap: 4px;
   }
 
+  /* Ensure prev/next buttons are full size and visible */
   .ctrl-btn {
-    padding: 6px;
-    min-width: 32px;
-    min-height: 32px;
+    padding: 8px;
+    min-width: 36px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .ctrl-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   .play-btn {
-    width: 38px;
-    height: 38px;
+    width: 44px !important;
+    height: 44px !important;
   }
 
-  /* Volume hidden on mobile */
   .player-right {
     display: none;
   }
 
-  /* Mobile bottom navigation */
+  /* Mobile nav: fixed at very bottom */
   .mobile-nav {
     display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 52px;
+    height: var(--mobile-nav-h);
     background: var(--bg2);
     border-top: 1px solid var(--border);
     z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .mobile-nav button {
+  .mobile-nav button,
+  .mobile-nav label {
     flex: 1;
     background: none;
     border: none;
@@ -1136,9 +1162,10 @@ body {
     transition: color 0.2s;
   }
 
-  .mobile-nav button svg {
-    width: 20px;
-    height: 20px;
+  .mobile-nav button svg,
+  .mobile-nav label svg {
+    width: 22px;
+    height: 22px;
     stroke: currentColor;
     fill: none;
     stroke-width: 1.8;
@@ -1151,7 +1178,7 @@ body {
   }
 
   .toast {
-    bottom: 185px;
+    bottom: calc(var(--player-h) + var(--mobile-nav-h) + 12px);
     font-size: 12px;
   }
 }

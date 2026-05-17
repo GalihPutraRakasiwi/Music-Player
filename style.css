@@ -17,7 +17,7 @@
   --text2: #8888a8;
   --text3: #555570;
   --border: rgba(255, 255, 255, 0.07);
-  --player-h: 90px;
+  --player-h: 130px;
   --sidebar-w: 220px;
   --np-w: 260px;
   --radius: 12px;
@@ -277,6 +277,7 @@ body {
   flex-direction: column;
   overflow-y: auto;
   flex: 1;
+  -webkit-overflow-scrolling: touch;
 }
 .song-list.hidden {
   display: none;
@@ -284,7 +285,7 @@ body {
 
 .list-header {
   display: grid;
-  grid-template-columns: 36px 1fr 160px 60px 48px;
+  grid-template-columns: 36px 1fr 60px 44px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
   color: var(--text3);
@@ -295,15 +296,21 @@ body {
   flex-shrink: 0;
 }
 
+/* Hide artist column header on desktop too since we removed it */
+.col-artist {
+  display: none;
+}
+
 .song-row {
   display: grid;
-  grid-template-columns: 36px 1fr 160px 60px 48px;
+  grid-template-columns: 36px 1fr 60px 44px;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s;
   gap: 4px;
+  min-height: 52px;
 }
 .song-row:hover {
   background: var(--bg3);
@@ -347,21 +354,16 @@ body {
   text-overflow: ellipsis;
   color: var(--text);
 }
+/* Hide small artist subtitle since we're title-only */
 .sr-artist-small {
-  font-size: 12px;
-  color: var(--text2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none;
 }
 
+/* Artist column hidden - we don't use it anymore */
 .sr-artist {
-  font-size: 13px;
-  color: var(--text2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none;
 }
+
 .sr-dur {
   font-size: 13px;
   color: var(--text3);
@@ -370,25 +372,29 @@ body {
 
 .sr-actions {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   justify-content: flex-end;
   opacity: 0;
   transition: opacity 0.15s;
 }
-.song-row:hover .sr-actions {
+.song-row:hover .sr-actions,
+.song-row:active .sr-actions {
   opacity: 1;
 }
 .sr-actions button {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   border-radius: 4px;
   color: var(--text3);
   line-height: 1;
   transition: color 0.15s;
   display: flex;
   align-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  justify-content: center;
 }
 .sr-actions button:hover {
   color: var(--text);
@@ -644,24 +650,90 @@ body {
   height: var(--player-h);
   background: var(--bg2);
   border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* Progress at very top of player bar */
+.player-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 4px;
+}
+
+.player-progress-row span {
+  font-size: 11px;
+  color: var(--text3);
+  font-variant-numeric: tabular-nums;
+  min-width: 34px;
+  flex-shrink: 0;
+}
+#time-current {
+  text-align: right;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--bg4);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: height 0.15s;
+}
+.progress-bar:hover {
+  height: 6px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+.progress-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: var(--text);
+  border-radius: 50%;
+  left: 0%;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.progress-bar:hover .progress-thumb {
+  opacity: 1;
+}
+
+/* Main controls row */
+.player-main-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0 24px;
-  gap: 16px;
-  flex-shrink: 0;
+  padding: 4px 16px 10px;
+  gap: 8px;
+  flex: 1;
 }
 
 .player-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   overflow: hidden;
+  min-width: 0;
 }
 
 .mini-art {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border-radius: 8px;
   background: var(--bg4);
   display: flex;
@@ -688,6 +760,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 .mini-title {
   font-size: 13px;
@@ -697,25 +770,25 @@ body {
   text-overflow: ellipsis;
 }
 .mini-artist {
-  font-size: 12px;
-  color: var(--text2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none; /* hidden since no artist info */
 }
 
 .player-center {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
+  gap: 0;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+}
+
+/* Old progress-area hidden — moved above */
+.progress-area {
+  display: none;
 }
 
 .ctrl-btn {
@@ -731,6 +804,8 @@ body {
   transition:
     color 0.15s,
     background 0.15s;
+  min-width: 36px;
+  min-height: 36px;
 }
 .ctrl-btn svg {
   width: 18px;
@@ -791,69 +866,15 @@ body {
   display: none !important;
 }
 
-.progress-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 440px;
-}
-
-.progress-area span {
-  font-size: 11px;
-  color: var(--text3);
-  font-variant-numeric: tabular-nums;
-  min-width: 34px;
-}
-#time-current {
-  text-align: right;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 4px;
-  background: var(--bg4);
-  border-radius: 2px;
-  cursor: pointer;
-  position: relative;
-  transition: height 0.15s;
-}
-.progress-bar:hover {
-  height: 6px;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  width: 0%;
-  transition: width 0.1s linear;
-  pointer-events: none;
-}
-.progress-thumb {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 12px;
-  height: 12px;
-  background: var(--text);
-  border-radius: 50%;
-  left: 0%;
-  opacity: 0;
-  transition: opacity 0.15s;
-  pointer-events: none;
-}
-.progress-bar:hover .progress-thumb {
-  opacity: 1;
-}
-
 .player-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   justify-content: flex-end;
 }
 
 .volume-bar {
-  width: 90px;
+  width: 70px;
   height: 4px;
   background: var(--bg4);
   border-radius: 2px;
@@ -920,7 +941,7 @@ body {
 /* ---- Notification toast ---- */
 .toast {
   position: fixed;
-  bottom: 110px;
+  bottom: 150px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: var(--bg3);
@@ -942,6 +963,11 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
+/* ---- Mobile bottom nav ---- */
+.mobile-nav {
+  display: none;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
   .now-playing {
@@ -950,18 +976,182 @@ body {
   .app {
     grid-template-columns: var(--sidebar-w) 1fr;
   }
-  .progress-area {
-    width: 280px;
-  }
 }
+
 @media (max-width: 640px) {
+  :root {
+    --player-h: 120px;
+    --sidebar-w: 0px;
+  }
+
   .sidebar {
     display: none;
   }
+
   .app {
     grid-template-columns: 1fr;
+    height: calc(100vh - var(--player-h) - 52px); /* space for mobile nav */
   }
+
+  .view {
+    padding: 16px 16px 8px;
+  }
+
+  .view-header {
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .view-header h1 {
+    font-size: 22px;
+  }
+
+  .header-actions {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #search-input {
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+  }
+
+  #sort-select {
+    display: none; /* hide sort on mobile for space */
+  }
+
+  /* Song list — compact mobile layout */
+  .list-header {
+    grid-template-columns: 28px 1fr 52px 40px;
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .song-row {
+    grid-template-columns: 28px 1fr 52px 40px;
+    padding: 8px 8px;
+    min-height: 48px;
+  }
+
+  .sr-title {
+    font-size: 13px;
+  }
+
+  .sr-dur {
+    font-size: 12px;
+  }
+
+  /* Always show actions on mobile (no hover on touch) */
+  .sr-actions {
+    opacity: 1;
+  }
+
+  /* Only show fav button on mobile, hide queue+delete to save space */
+  .sr-actions button:not(:first-child) {
+    display: none;
+  }
+
+  /* Player bar mobile */
+  .player-progress-row {
+    padding: 8px 12px 2px;
+  }
+
+  .player-main-row {
+    padding: 2px 12px 8px;
+    gap: 4px;
+  }
+
+  .player-left {
+    gap: 8px;
+  }
+
+  .mini-art {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mini-title {
+    font-size: 12px;
+  }
+
+  /* Hide shuffle & repeat on mobile player to save space */
+  #shuffle-btn,
+  #repeat-btn {
+    display: none;
+  }
+
+  .controls {
+    gap: 2px;
+  }
+
+  .ctrl-btn {
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .ctrl-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .play-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* Volume hidden on mobile */
   .player-right {
     display: none;
+  }
+
+  /* Mobile bottom navigation */
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 52px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+  }
+
+  .mobile-nav button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    font-family: "DM Sans", sans-serif;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .mobile-nav button svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-nav button.active {
+    color: var(--accent);
+  }
+
+  .toast {
+    bottom: 185px;
+    font-size: 12px;
   }
 }
